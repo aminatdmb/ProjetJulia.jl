@@ -1,0 +1,7 @@
+name = "ProjetJulia"
+uuid = "b37366fc-009b-4748-a135-4a9b38dcf2f8"
+authors = ["tahakaddis <tahakaddis3@gmail.com>"]
+version = "0.0.1"
+
+[compat]
+julia = "1.10"
