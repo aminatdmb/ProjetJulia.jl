@@ -1,49 +1,53 @@
 using CSV
 using DataFrames
 using DecisionTree
+using Statistics  # pour la fonction mean()
 
-data = CSV.read("data/bc_data.csv", DataFrame)
+df = CSV.read("data/bc_data.csv", DataFrame)
+fold_df = CSV.read("data/folds.csv", DataFrame)
 
 # Vérification de la database 
+#first(df, 5)
+describe(df) # Vérification des données manquantes 
+size(df)
+names(df)
 
-#first(data, 5)
-describe(data) # Vérification des données manquantes 
-size(data)
-names(data)
+X = Matrix(df[:, 1:9]) # matrice des variables
+y = Vector(df[:, :Classification]) # vecteur contenant le diagnostic réel de chaque patiente ( Classification : sain/cancer )
+ 
+# Récupération du vecteur de plis (1 à 5)
+folds = folds_df.fold
 
-X = Matrix(data[:, 1:9]) # matrice des mesures médicales 
-y = string.(data[:, 10]) # vecteur contenant le diagnostic réel de chaque patiente ( Classification )
-# string pour forcer la classification ( résultat fini = malade ou pas malade) et éviter une régression 
 
-using Random
-using Statistics #  pour la fonction mean()
+# Validation des 5 plis 
+# Liste des scores de réussite des 5 plis 
+accuracy = Float64[]
+# Respectivement liste des prédictions et des vrais diagnostiques 
+all_y_test = String[]
+all_y_pred = String[]
 
-# 1. Reproductibilité
-Random.seed!(1) #fonction seed : point de départ du tirage aléatoire  
 
-# 2. Découpage Train(entrainement) / Test (70% - 30%)
-n = length(y) #nombre total de patientes
-indices = randperm(n) # Mélange aléatoire des indices [1,.., 116] => [84, 12,45,...]
 
-n_train = round(Int, 0.7 * n) # calcul et arrondi les 70% de l'effectif 
-train_idx = indices[1:n_train] # constitution du groupe d'entrainement 
-test_idx = indices[n_train+1:end] # constitution du groupe test 
+                                # DECOUPAGE EN PLI
+for k in 1:5 
+    train_idx = findall(folds .!= k) # Lignes des patientes du groupe d'entraînement (tous les autres plis sauf k)
+    test_idx  = findall(folds .== k) # Lignes des patientes du groupe test (celles du pli k)
 
+# Séparation train / test
 X_train, y_train = X[train_idx, :], y[train_idx]
 X_test, y_test   = X[test_idx, :], y[test_idx]
 
-# 3. Entraînement de l'arbre
-# AIDE IA
-# build_tree(labels, features, n_subfeatures, max_depth)
-# n_subfeatures = 0 signifie qu'on teste toutes les 9 variables à chaque coupure
+                                # ENTRAINEMENT DE L'ARBRE
 
-# On teste avec différentes profondeurs de l'arbre pour voir lequel est le plus optimisé
+# build_tree(y_train, X_train, nbr de variables (0 = toutes), profondeur max)
+
 model = build_tree(y_train, X_train, 0, 3)  
 # model = build_tree(y_train, X_train, 0, 2) 
-# model = build_tree(y_train, X_train, 0, 4)   
+# model = build_tree(y_train, X_train, 0, 4)  
+
 
 # 4. Affichage de l'arbre
-println("--- RÈGLES DE DÉCISION DE L'ARBRE ---")
+println("RÈGLES DE DÉCISION DE L'ARBRE ")
 print_tree(model)
 
 
