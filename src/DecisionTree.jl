@@ -3,8 +3,8 @@ using DataFrames
 using DecisionTree
 using Statistics  # pour la fonction mean()
 
-df = CSV.read("data/bc_data.csv", DataFrame)
-folds_df = CSV.read("data/folds.csv", DataFrame)
+df = CSV.read(normpath(joinpath(@__DIR__, "..", "data", "coimbra_clean.csv")), DataFrame)
+folds_df = CSV.read(normpath(joinpath(@__DIR__, "..", "data", "folds.csv")), DataFrame)
 
 # Vérification de la database 
 #first(df, 5)
@@ -75,7 +75,7 @@ println("Le taux d'exactitude moyen est de", round(mean(pred_accuracy) * 100, di
 
 
 # 7. Matrice de confusion (repérer les faux négatifs et postifs)
-cm = confusion_matrix(all_y_test, all_y_pred)
+cm = DecisionTree.confusion_matrix(all_y_test, all_y_pred)
 println("Matrice de confusion :")
 println(cm)
 
