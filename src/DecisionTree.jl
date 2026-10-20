@@ -61,7 +61,7 @@ acc_k = mean(y_pred .== y_test)
 
 # On stocke le niveau d'accuracy des prédictions de chaque pli dans la liste pred_accuracy
 push!(pred_accuracy, acc_k)
-println("Taux d'exactitude du pli $k est de ", round(acc_k * 100, digits=2), " %")
+println("Le taux d'exactitude du pli $k est de ", round(acc_k * 100, digits=2), " %")
 
 # Pour la matrice de confusion 
 append!(all_y_test, y_test)
