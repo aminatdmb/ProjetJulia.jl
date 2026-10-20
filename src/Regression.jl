@@ -15,7 +15,7 @@ describe(df_reg)
 folds = folds_df.fold
 
 #Liste du taux d'erreurs par pli 
-taux_erreur_pli = []
+taux_erreur_pli = [] 
 
 for k in 1:5 
     lignes_train = findall(folds .!= k) # Lignes des patientes du groupe d'entraînement (tous les autres plis sauf k)
